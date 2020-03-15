@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "target": "ESNext",
+        "module": "commonjs",
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "incremental": true,
+    }
+}
