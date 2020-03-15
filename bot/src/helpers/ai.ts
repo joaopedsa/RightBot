@@ -5,7 +5,7 @@ class Nlu {
     client: Wit
     constructor() {
         this.client = new Wit({
-            accessToken: 'BSCFB6HK2Q5EZ3XLTJR6HHD4PLQC5WVC',
+            accessToken: process.env.AccessTokenWit,
         })
     }
     
@@ -29,46 +29,6 @@ class Nlu {
     }
 
     async getMatches(nluResponse, answers) {
-
-        const exactMatch = answers.filter((elem) => {
-            if (nluResponse.intent === elem.intent) {
-                // Accept
-            } else {
-                return false
-            }
-            for (let i = 0; i < nluResponse.assuntos.length; i++) {
-                if (elem.assuntos.includes(elem.assuntos[i])) {
-                    // Accept
-                } else {                    
-                    return false
-                }
-            }
-            for (let i = 0; i < elem.assuntos.length; i++) {
-                if (nluResponse.assuntos.includes(elem.assuntos[i])) {
-                    // Accept
-                } else {                    
-                    return false
-                }
-            }
-            return true
-        })
-        if (exactMatch.length > 0) return exactMatch
-        
-        const atLeastOneAssunto = answers.filter((answerEl) => {
-            for (let i = 0; i < nluResponse.assuntos.length; i++) {
-                return answerEl.assuntos.some((assAttEl) => {
-                    return removeAccents(assAttEl).trim().toLowerCase() == removeAccents(nluResponse.assuntos[i]).trim().toLowerCase()
-                })
-            }
-        })
-
-        if (atLeastOneAssunto.length > 0) return atLeastOneAssunto
-
-        const intentMatch = answers.filter((elem) => {
-            if (nluResponse.intent === elem.intent) return true
-        })
-        if (intentMatch.length > 0) return intentMatch
-        return []
     }
 
     regEx(text) {
