@@ -5,35 +5,44 @@ import {
 
 import Activities from '../../helpers/activities';
 import BaseDialog from '../baseDialog';
-import NameDialog from '../nameDialog/nameDialog';
+import AiDialog from '../aiDialog/aiDialog';
+import MainPrompt from '../../prompts/mainPrompts';
+import { BotStatePropertyAccessor } from 'botbuilder';
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
-const NAME_DIALOG = 'NAME_DIALOG'
+const AI_DIALOG = 'AI_DIALOG'
+const MAIN_PROMPT = 'MAIN_PROMPT';
 
 class MainDialog extends BaseDialog {
 
     activities: Activities
+    userProfile: BotStatePropertyAccessor
 
-    constructor(dialogId) {
+    constructor(dialogId, userProfile) {
         super(dialogId);
+        this.userProfile = userProfile
         this.activities = new Activities()
 
         this.addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.introStep.bind(this),
-            this.proximostep.bind(this)
+            this.menuStep.bind(this)
         ]));
+        
+        this.addDialog(new AiDialog(AI_DIALOG, this.userProfile))
 
-        this.addDialog(new NameDialog(NAME_DIALOG))
+        // Prompts
+        this.addDialog(new MainPrompt(MAIN_PROMPT))
     }
 
     private async introStep(stepContext: WaterfallStepContext): Promise<any> {
-        await stepContext.context.sendActivity('INTRO')
-        return await stepContext.next()
+        await stepContext.context.sendActivities(this.activities.typing())
+        await stepContext.context.sendActivities(this.activities.delay('Olá'))
+        return await stepContext.beginDialog(AI_DIALOG)
     }
 
-    private async proximostep(stepContext: WaterfallStepContext): Promise<any> {
-        await stepContext.context.sendActivity('PROXIMO')
-        return await stepContext.beginDialog(NAME_DIALOG)
+    private async menuStep(stepContext: WaterfallStepContext): Promise<any> {
+        await stepContext.context.sendActivities(this.activities.typing())
+        return await stepContext.context.sendActivities(this.activities.delay('Olá'))
     }
 }
 

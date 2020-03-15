@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as restify from 'restify';
 
 import { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState } from 'botbuilder';
-import Bot from './bot'
+import Bot from './bot';
+import Ai from './helpers/ai';
+import ApiWit from './services/api-wit';
 
 const ENV_FILE = path.join(__dirname, '..', 'config/development.env');
 config({ path: ENV_FILE });
@@ -26,6 +28,12 @@ class App {
         this.memoryStorage = new MemoryStorage();
         this.bot = new Bot(new ConversationState(this.memoryStorage), new UserState(this.memoryStorage));
 
+        // Connection to Artificial Inteligence
+        new Ai()
+
+        // Service to wit
+        new ApiWit()
+
         this.turnOnServer()
 
         this.adapter.onTurnError = async (context, error) => {
@@ -37,7 +45,7 @@ class App {
             // await conversationState.delete(context);x
         };
     }
-    
+
 
     private turnOnServer() {
         this.server.listen(process.env.port || process.env.PORT || 3978, () => {

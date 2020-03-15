@@ -1,37 +1,40 @@
-import Wit from 'node-wit'
-import * as removeAccents from 'remove-accents'
+import { Wit } from 'node-wit'
+import ApiWit from '../services/api-wit'
 
-class Nlu {
-    client: Wit
+class Ai {
+    static client: Wit
     constructor() {
-        this.client = new Wit({
+        Ai.client = new Wit({
             accessToken: process.env.AccessTokenWit,
         })
     }
-    
-    async getIntent(utterance) {
+
+    static async getIntent(utterance) {
         let assuntos = []
         let intent = ''
-        const result = await this.client.message(utterance)
+        const result = await Ai.client.message(utterance, {})
         if (result && result.entities) {
             const entities = result.entities
-            
+            // const response = await ApiWit.api.put('/entities/intent', {value: "quero", expressions: ['quero']})
+            // console.log(response)
+            console.log(entities)
+
             if (entities.assunto && entities.assunto.length > 0) {
                 entities.assunto.forEach(elem => {
                     return assuntos.push(elem.value)
                 })
-            }            
+            }
             if (entities.intent && entities.intent.length > 0) {
                 intent = entities.intent[0].value
-            }            
+            }
         }
         return { assuntos, intent }
     }
 
-    async getMatches(nluResponse, answers) {
+    static async getMatches(nluResponse, answers) {
     }
 
-    regEx(text) {
+    static regEx(text) {
         const affirmative = /^sim.?$|^aim.?$|^yes.?$|^conseguiu.?$|^respondeu.?$|^foi.?$|^satisfaz.?$|^gostaria.?$|^quero.?$|^tenho.?$|^desejo.?$/i
         const appreciate = /^obrigad.?.?$|^muito obrigad.?.?$|^valeu.?$/i
         const goodbye = /^tchau|^vlw.?$|^flw.?$|^fls.?$|^falost.?$|^bye|^at.? mais.?$|^at.? logo.?$|^at.?.?$/i
@@ -48,4 +51,4 @@ class Nlu {
     }
 }
 
-module.exports = { Nlu }
+export default Ai
